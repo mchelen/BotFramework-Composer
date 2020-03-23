@@ -10,7 +10,7 @@ import { Path } from '../utility/path';
 
 import { botsFolder, botEndpoint, appDataPath, environment, runtimeFolder, runtimeFrameworkVersion } from './env';
 
-interface Settings {
+export interface ApplicationSettings {
   botAdminEndpoint: string;
   botEndpoint: string;
   assetsLibray: string;
@@ -20,7 +20,7 @@ interface Settings {
   appDataPath: string;
 }
 
-const envSettings: { [env: string]: Settings } = {
+const envSettings: { [env: string]: ApplicationSettings } = {
   development: {
     botAdminEndpoint: botEndpoint,
     botEndpoint: botEndpoint,
@@ -35,7 +35,7 @@ const envSettings: { [env: string]: Settings } = {
 const defaultSettings = envSettings.development;
 const environmentSettings = envSettings[environment];
 
-const finalSettings = merge<Settings, Settings>(defaultSettings, environmentSettings);
+const finalSettings = merge<ApplicationSettings, ApplicationSettings>(defaultSettings, environmentSettings);
 
 log('App Settings: %O', finalSettings);
 

@@ -75,7 +75,7 @@ export class BotProject {
     );
 
     this.settingManager = new DefaultSettingManager(this.dir);
-    this.fileStorage = StorageService.getStorageClient(this.ref.storageId, user);
+    this.fileStorage = StorageService.getInstance().getStorageClient(this.ref.storageId, user);
     this.luPublisher = new LuPublisher(this.dir, this.fileStorage);
   }
 
@@ -334,7 +334,7 @@ export class BotProject {
 
   public cloneFiles = async (locationRef: LocationRef): Promise<LocationRef> => {
     // get destination storage client
-    const dstStorage = StorageService.getStorageClient(locationRef.storageId);
+    const dstStorage = StorageService.getInstance().getStorageClient(locationRef.storageId);
     // ensure saveAs path isn't existed in dst storage, in order to cover or mess up
     // existed bot proj
     if (await dstStorage.exists(locationRef.path)) {

@@ -7,10 +7,11 @@ import { Request, Response } from 'express';
 
 import log from '../logger';
 import { BotProjectService } from '../services/project';
-import AssectService from '../services/asset';
+import AssetService from '../services/asset';
 import { LocationRef } from '../models/bot/interface';
 import StorageService from '../services/storage';
-import settings from '../settings';
+//import settings from '../settings';
+import { settingsService } from '../services/settings';
 import { PluginLoader } from '../services/pluginLoader';
 
 import { Path } from './../utility/path';
@@ -24,7 +25,7 @@ async function createProject(req: Request, res: Response) {
   }
 
   // default the path to the default folder.
-  let path = settings.botsFolder;
+  let path = settingsService.getSettings().botsFolder;
   // however, if path is specified as part of post body, use that one.
   // this allows developer to specify a custom home for their bot.
   if (location) {
@@ -43,7 +44,7 @@ async function createProject(req: Request, res: Response) {
   log('Attempting to create project at %s', path);
 
   try {
-    const newProjRef = await AssectService.manager.copyProjectTemplateTo(templateId, locationRef, user);
+    const newProjRef = await AssetService.getInstance().manager.copyProjectTemplateTo(templateId, locationRef, user);
     const id = await BotProjectService.openProject(newProjRef, user);
     const currentProject = await BotProjectService.getProjectById(id, user);
     if (currentProject !== undefined) {
@@ -157,7 +158,7 @@ async function saveProjectAs(req: Request, res: Response) {
 
   const locationRef: LocationRef = {
     storageId,
-    path: location ? Path.join(location, name) : Path.resolve(settings.botsFolder, name),
+    path: location ? Path.join(location, name) : Path.resolve(settingsService.getSettings().botsFolder, name),
   };
 
   try {
@@ -437,11 +438,11 @@ async function publishLuis(req: Request, res: Response) {
 
 async function getAllProjects(req: Request, res: Response) {
   const storageId = 'default';
-  const folderPath = Path.resolve(settings.botsFolder);
+  const folderPath = Path.resolve(settingsService.getSettings().botsFolder);
   const user = await PluginLoader.getUserFromRequest(req);
 
   try {
-    res.status(200).json(await StorageService.getBlob(storageId, folderPath, user));
+    res.status(200).json(await StorageService.getInstance().getBlob(storageId, folderPath, user));
   } catch (e) {
     res.status(400).json({
       message: e.message,

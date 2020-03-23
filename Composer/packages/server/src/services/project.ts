@@ -101,7 +101,7 @@ export class BotProjectService {
     const promises = projects.map(async project => {
       let dateModified = '';
       try {
-        dateModified = await StorageService.getBlobDateModified(project.storageId, project.path, user);
+        dateModified = await StorageService.getInstance().getBlobDateModified(project.storageId, project.path, user);
         dateModifiedDict.push({ dateModified, path: project.path });
       } catch (err) {
         log(err);
@@ -135,7 +135,7 @@ export class BotProjectService {
     BotProjectService.initialize();
 
     // TODO: this should be refactored or moved into the BotProject constructor so that it can use user auth amongst other things
-    if (!(await StorageService.checkBlob(locationRef.storageId, locationRef.path, user))) {
+    if (!(await StorageService.getInstance().checkBlob(locationRef.storageId, locationRef.path, user))) {
       BotProjectService.deleteRecentProject(locationRef.path);
       throw new Error(`file not exist ${locationRef.path}`);
     }
@@ -174,7 +174,7 @@ export class BotProjectService {
     } else {
       const path = BotProjectService.projectLocationMap[projectId];
       // check to make sure the project is still there!
-      if (!(await StorageService.checkBlob('default', path, user))) {
+      if (!(await StorageService.getInstance().checkBlob('default', path, user))) {
         BotProjectService.deleteRecentProject(path);
         BotProjectService.removeProjectIdFromCache(projectId);
         throw new Error(`file not exist ${path}`);

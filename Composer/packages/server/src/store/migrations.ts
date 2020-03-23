@@ -7,7 +7,8 @@ import get from 'lodash/get';
 import set from 'lodash/set';
 
 import log from '../logger';
-import settings from '../settings';
+//import settings from '../settings';
+import { settingsService } from '../services/settings';
 
 import initData from './data.template';
 
@@ -32,8 +33,8 @@ interface Migration {
 const migrations: Migration[] = [
   {
     name: 'Add defaultPath',
-    condition: data => get(data, 'storageConnections.0.defaultPath') !== settings.botsFolder,
-    run: data => set(data, 'storageConnections[0].defaultPath', settings.botsFolder),
+    condition: data => get(data, 'storageConnections.0.defaultPath') !== settingsService.getSettings().botsFolder,
+    run: data => set(data, 'storageConnections[0].defaultPath', settingsService.getSettings().botsFolder),
   },
   {
     name: 'Re-init when version update',

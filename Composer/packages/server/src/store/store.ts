@@ -5,12 +5,13 @@ import fs from 'fs';
 import path from 'path';
 
 import log from '../logger';
-import settings from '../settings';
+//import settings from '../settings';
+import { settingsService } from '../services/settings';
 
 import initData from './data.template';
 import { runMigrations } from './migrations';
 
-const dataStorePath = settings.appDataPath;
+const dataStorePath = settingsService.getSettings().appDataPath;
 
 const migrateStore = () => {
   if (fs.existsSync(dataStorePath)) {

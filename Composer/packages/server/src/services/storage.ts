@@ -14,12 +14,14 @@ const fileBlacklist = ['.DS_Store'];
 const isValidFile = (file: string) => {
   return fileBlacklist.filter(badFile => badFile === file).length === 0;
 };
+
+export let storageService: StorageService;
 class StorageService {
   private STORE_KEY = 'storageConnections';
   private storageConnections: StorageConnection[] = [];
 
   constructor() {
-    this.storageConnections = Store.get(this.STORE_KEY);
+    this.storageConnections = Store.get(this.STORE_KEY); // initialize store
     this.ensureDefaultBotFoldersExist();
   }
 
@@ -145,5 +147,11 @@ class StorageService {
   };
 }
 
-const service = new StorageService();
-export default service;
+export default {
+  getInstance: (): StorageService => {
+    if (!storageService) {
+      storageService = new StorageService();
+    }
+    return storageService;
+  },
+};

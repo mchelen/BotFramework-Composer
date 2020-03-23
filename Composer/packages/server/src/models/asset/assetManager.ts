@@ -96,6 +96,8 @@ export class AssetManager {
   private runtimeTemplates: ProjectTemplate[] = [];
 
   constructor(assetsLibraryPath: string, runtimesPath: string) {
+    console.log('got assets library path: ', assetsLibraryPath);
+    console.log('got runtimes path: ', runtimesPath);
     this.assetsLibraryPath = assetsLibraryPath;
     this.runtimesPath = runtimesPath;
     this.templateStorage = new LocalDiskStorage();
@@ -111,6 +113,7 @@ export class AssetManager {
     const path = this.assetsLibraryPath + '/projects';
     const output: ProjectTemplate[] = [];
     if (await this.templateStorage.exists(path)) {
+      console.log('project templates path exists!');
       const folders = await this.templateStorage.readDir(path);
       this.projectTemplates = [];
       for (const name of folders) {
@@ -119,11 +122,13 @@ export class AssetManager {
         const absPath = Path.join(path, name);
         if ((await this.templateStorage.stat(absPath)).isDir) {
           const base = { id: name, ...templateData };
+          console.log('pushing project template: ', base, absPath);
           this.projectTemplates.push({ ...base, path: absPath });
           output.push(base);
         }
       }
     }
+    console.log('done trying to load project templates at path: ', path);
 
     return output.sort((a, b) => {
       if (a.order && b.order) {
@@ -142,18 +147,22 @@ export class AssetManager {
     const path = this.runtimesPath;
     const output: ProjectTemplate[] = [];
 
+    console.log('trying to load runtime templates at path: ', path);
     if (await this.templateStorage.exists(path)) {
+      console.log('runtime templates path exists!');
       const folders = await this.templateStorage.readDir(path);
       this.runtimeTemplates = [];
       for (const name of folders) {
         const absPath = Path.join(path, name);
         if ((await this.templateStorage.stat(absPath)).isDir) {
           const base = { id: name, name: runtimes[name].name, description: runtimes[name].description };
+          console.log('pushing runtime template: ', base, absPath);
           this.runtimeTemplates.push({ ...base, path: absPath });
           output.push(base);
         }
       }
     }
+    console.log('done trying to load runtime templates at path: ', path);
 
     return output;
   }
@@ -178,7 +187,7 @@ export class AssetManager {
 
   public async copyProjectTemplateTo(templateId: string, ref: LocationRef, user?: UserIdentity): Promise<LocationRef> {
     // user storage maybe diff from template storage
-    const dstStorage = StorageService.getStorageClient(ref.storageId, user);
+    const dstStorage = StorageService.getInstance().getStorageClient(ref.storageId, user);
     const dstDir = Path.resolve(ref.path);
     if (await dstStorage.exists(dstDir)) {
       log('Failed copying template to %s', dstDir);
