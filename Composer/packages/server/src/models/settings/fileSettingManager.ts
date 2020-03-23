@@ -21,7 +21,7 @@ export class FileSettingManager implements ISettingManager {
   constructor(basePath: string, user?: UserIdentity) {
     this.basePath = basePath;
     // todo: do we need to pass in a storage client id? there can only be one at a time.
-    this.storage = StorageService.getStorageClient('default', user);
+    this.storage = StorageService.getInstance().getStorageClient('default', user);
   }
 
   public get = async (slot = '', obfuscate = false): Promise<any> => {

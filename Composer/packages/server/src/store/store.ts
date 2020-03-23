@@ -79,3 +79,4 @@ class JsonStore implements KVStore {
 }
 
 export const Store = new JsonStore(dataStorePath);
+console.log('initialized store with path: ', dataStorePath);
